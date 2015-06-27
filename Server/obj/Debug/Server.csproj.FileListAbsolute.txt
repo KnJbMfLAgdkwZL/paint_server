@@ -1,0 +1,6 @@
+c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\bin\Debug\Server.exe.config
+c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\bin\Debug\Server.exe
+c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\bin\Debug\Server.pdb
+c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\obj\Debug\Server.exe
+c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\obj\Debug\Server.pdb
+c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\obj\Debug\Server.csprojResolveAssemblyReference.cache
