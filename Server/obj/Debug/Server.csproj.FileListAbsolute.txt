@@ -4,3 +4,5 @@ c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\bin\Debug\
 c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\obj\Debug\Server.exe
 c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\obj\Debug\Server.pdb
 c:\users\zippocat\documents\visual studio 2013\Projects\Server\Server\obj\Debug\Server.csprojResolveAssemblyReference.cache
+C:\Users\Zippocat\Documents\Visual Studio 2013\Projects\Server\Server\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Zippocat\Documents\Visual Studio 2013\Projects\Server\Server\bin\Debug\Newtonsoft.Json.xml
