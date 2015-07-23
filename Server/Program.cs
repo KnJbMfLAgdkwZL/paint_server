@@ -5,6 +5,7 @@ namespace Server
     {
         static void Main(string[] args)
         {
+            /*
             AsyncWebSocketsServer server = new AsyncWebSocketsServer();
             server.Start(6789);
             String str = "";
@@ -18,6 +19,14 @@ namespace Server
                     break;
                 }
             }
+             * */
+
+            Server_2 srv = new Server_2();
+            srv.Start(6789);
+
+            Console.ReadLine();
+
+
         }
     }
 }

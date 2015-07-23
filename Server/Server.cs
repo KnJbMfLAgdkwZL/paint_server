@@ -9,9 +9,6 @@ using Newtonsoft.Json;
 using System.Threading;
 namespace Server
 {
-    /// <summary>
-    ///     Вспомогательный класс для служебной информации.
-    /// </summary>
     class User
     {
         private Socket client = null;
@@ -23,13 +20,29 @@ namespace Server
         {
             this.name = name;
         }
+        public void SetUserinfo(String userinfo)
+        {
+            this.userinfo = userinfo;
+        }
         public void SetLastmes(long lastmes)
         {
             this.lastmes = lastmes;
         }
+        public void SetRoom(String room)
+        {
+            this.roomid = room;
+        }
+        public String GetRoom()
+        {
+            return this.roomid;
+        }
         public Socket GetClient()
         {
             return this.client;
+        }
+        public void SetClient(Socket client)
+        {
+            this.client = client;
         }
         public String GetName()
         {
@@ -55,9 +68,11 @@ namespace Server
             this.lastmes = lastmes;
             this.roomid = roomid;
         }
-        /// <summary>
-        ///     Вывести информацию по пользователю в консоль.
-        /// </summary>
+
+        public User()
+        {
+        }
+
         public void ShowAll()
         {
             String str = "";
@@ -130,6 +145,10 @@ namespace Server
         private void OnRecievedData(IAsyncResult ar)
         {
             Socket client = ar.AsyncState as Socket;
+            if (client.Connected != true)
+            {
+                return;
+            }
             int length = client.EndReceive(ar);
             if (length > 0)
             {
@@ -162,47 +181,76 @@ namespace Server
                 {
                     case "room":
                         {
-                            String rooomid = values["id"];
-                            if (!this.rooms.ContainsKey(rooomid))
+                            String roomid = values["id"];
+                            if (!this.rooms.ContainsKey(roomid))
                             {
-                                this.rooms.Add(rooomid, new List<User>());
+                                this.rooms.Add(roomid, new List<User>());
                                 Console.WriteLine("Комната создана");
                             }
                             int unixTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
                             String name = "User_" + unixTime;
-                            User usr = new User(client, name, values["userinfo"], unixTime, rooomid);
-                            this.rooms[rooomid].Add(usr);
+                            User usr = new User(client, name, values["userinfo"], unixTime, roomid);
+                            this.rooms[roomid].Add(usr);
                             usr.ShowAll();
-                            Console.WriteLine("Room " + rooomid + " Count = " + this.rooms[rooomid].Count);
+                            Console.WriteLine("Room " + roomid + " Count = " + this.rooms[roomid].Count);
+
+                            this.UserRefresh(roomid);
+
                         }
                         break;
                     case "stilalive":
                         {
-                            String rooomid = values["id"];
-                            if (!this.rooms.ContainsKey(rooomid))
+                            String roomid = values["id"];
+                            if (!this.rooms.ContainsKey(roomid))
                             {
                                 return;
                             }
-                            List<User> room = this.rooms[rooomid];
-                            for (int i = 0; i < room.Count; i++)
+                            List<User> room = this.rooms[roomid];
+                            User usr = this.FindCurrentUserInRoom(client, roomid);
+                            if (usr != null)
                             {
-                                User usr = room[i];
-                                if (usr.EqualsClient(client) == true)
-                                {
-                                    int unixTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
-                                    usr.SetLastmes(unixTime);
-                                    Console.WriteLine(unixTime + " = " + usr.GetName());
-                                    break;
-                                }
+                                int unixTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+                                usr.SetLastmes(unixTime);
+                            }
+                        }
+                        break;
+                    case "changenick":
+                        {
+                            String name = values["name"];
+                            if(name.Length <= 0)
+                            {
+                                return;
+                            }
+                            String roomid = values["id"];
+                            List<User> room = this.rooms[roomid];
+                            User usr = this.FindCurrentUserInRoom(client, roomid);
+                            if (usr != null)
+                            {
+                                usr.SetName(name);
+                                this.UserRefresh(roomid);
                             }
                         }
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception err)
             {
-
+                Console.WriteLine(err.Message);
+                Console.WriteLine(err.Source);
+                Console.WriteLine(err.StackTrace.Substring(err.StackTrace.LastIndexOf("at")));
             }
+        }
+        private User FindCurrentUserInRoom(Socket user, String roomid)
+        {
+            List<User> room = this.rooms[roomid];
+            foreach (User item in room)
+            {
+                if (item.EqualsClient(user) == true)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
         private void CheckStilalive()
         {
@@ -224,6 +272,16 @@ namespace Server
                                 this.rooms[roomid].Remove(usr);
                                 Console.WriteLine(usr.GetName() + " Вышол");
                                 this.Close(usr.GetClient());
+                                if (this.rooms[roomid].Count > 0)
+                                {
+                                    this.UserRefresh(roomid);
+                                }
+                                else
+                                {
+                                    this.rooms.Remove(roomid);
+                                    this.CheckStilalive();
+                                    return;
+                                }
                             }
 
                         }
@@ -232,14 +290,35 @@ namespace Server
                 catch (Exception err)
                 {
                     Console.WriteLine(err.Message);
+                    Console.WriteLine(err.Source);
+                    Console.WriteLine(err.StackTrace.Substring(err.StackTrace.LastIndexOf("at")));
                 }
             }
+        }
+        private void UserRefresh(String roomid)
+        {
+            List<String> userlist = new List<String>();
+            List<User> users = this.rooms[roomid];
+            for (int i = 0; i < users.Count; i++)
+            {
+                String user = users[i].GetName();
+                userlist.Add(user);
+            }
+            Object[] comand = new Object[2];
+            comand[0] = "UserRefresh";
+            comand[1] = userlist;
+
+            String str = JsonConvert.SerializeObject(comand);
+            Console.WriteLine(str);
+
+
+            this.SendToAllInRoom(str, roomid);
+
         }
         private void Close(Socket s)
         {
             s.BeginDisconnect(true, new AsyncCallback(DisconnectCallback), s);
         }
-
         private void Handshake(Socket client, String data)
         {
             byte[] MASK = new byte[4];
@@ -306,20 +385,18 @@ namespace Server
             byte[] sendbuf = Encoding.UTF8.GetBytes(str);
             client.Send(sendbuf);
         }
-        private void SendToAll(Byte[] buffer, Socket socket = null)
+        private void SendToAllInRoom(String str, String roomid, Socket except = null)
         {
-            /*for (int i = 0; i < this.users.Count; i++)
+            List<User> users = this.rooms[roomid];
+            for (int i = 0; i < users.Count; i++)
             {
-                Socket clientSend = this.users[i];
-                if (socket != clientSend)
+                Socket client = users[i].GetClient();
+                if (except != client)
                 {
-                    clientSend.Send(buffer);
+                    this.SendStrForWbebSocet(client, str);
                 }
-            }*/
+            }
         }
-        /// <summary>
-        ///     Отправляет на веб сокет строку.
-        /// </summary>
         private void SendStrForWbebSocet(Socket client, String str)
         {
             List<byte> buff = new List<byte>();
