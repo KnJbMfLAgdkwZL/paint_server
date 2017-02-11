@@ -1,0 +1,9 @@
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\bin\Debug\PaintServer.exe.config
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\bin\Debug\PaintServer.exe
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\bin\Debug\PaintServer.pdb
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\obj\Debug\PaintServer.csprojResolveAssemblyReference.cache
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\obj\Debug\PaintServer.exe
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\obj\Debug\PaintServer.pdb
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\bin\Debug\Alchemy.dll
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\bin\Debug\Newtonsoft.Json.dll
+c:\users\zippocat\documents\visual studio 2013\Projects\PaintServer\PaintServer\bin\Debug\Newtonsoft.Json.xml
