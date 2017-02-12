@@ -100,7 +100,7 @@ namespace PaintServer
                     String command = values.First() as String;
                     switch (command)
                     {
-                        case "conn":
+                        case "c":
                             {
                                 if (this.rooms.ContainsKey(room) == false)
                                 {
@@ -119,7 +119,7 @@ namespace PaintServer
                                 }
                             }
                             break;
-                        case "nick":
+                        case "n":
                             {
                                 String name = values[1] as String;
                                 if (name.Length > 1)
@@ -133,19 +133,19 @@ namespace PaintServer
                                 }
                             }
                             break;
-                        case "mclk":
+                        case "m":
                             {
                                 this.history[room].TryAdd(this.history[room].Count, data);
                                 this.SendForAll(data, room);
                             }
                             break;
-                        case "dlin":
+                        case "d":
                             {
                                 this.history[room].TryAdd(this.history[room].Count, data);
                                 this.SendForAll(data, room);
                             }
                             break;
-                        case "clca":
+                        case "l":
                             {
                                 this.history[room].Clear();
                                 this.SendForAll(data, room);
@@ -249,7 +249,7 @@ namespace PaintServer
                         String str = item.name;
                         names.Add(str);
                     }
-                    Object[] command = { "upus", names };
+                    Object[] command = { "u", names };
                     this.SendForAll(command, room);
                 }
             }
